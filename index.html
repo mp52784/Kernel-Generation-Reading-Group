@@ -558,61 +558,16 @@
     <h2 class="section-title">Upcoming &amp; Recent Sessions</h2>
     <p class="section-desc">Fridays 11 AM – 12 PM · POB 4.116 · <a href="https://utexas.zoom.us/j/81283935120?pwd=9OZ2SFSOLNGiZSmpJew1M2vhJEXBaJ.1" target="_blank" style="color: #D97706;">Zoom link</a></p>
 
-    <table class="schedule-table">
+        <table class="schedule-table">
       <thead>
         <tr>
           <th>Date</th>
           <th>Topic</th>
           <th>Presenter</th>
-          <th>Slides</th>
         </tr>
       </thead>
-      <tbody>
-        <tr class="highlight">
-          <td class="date-cell">Jul 3</td>
-          <td>
-            <div class="paper-title">KernelBench</div>
-            <div class="paper-meta"><span class="paper-tag">Benchmark</span></div>
-          </td>
-          <td class="presenter-cell">Jaeyoung</td>
-          <td><span style="color: var(--border-dark); font-size: 12px; font-family: var(--font-mono);">—</span></td>
-        </tr>
-        <tr>
-          <td class="date-cell">Jul 10</td>
-          <td>
-            <div class="paper-title">Machine Learning for Autotuning</div>
-            <div class="paper-meta"><span class="paper-tag">ML</span></div>
-          </td>
-          <td class="presenter-cell">Andrew</td>
-          <td><span style="color: var(--border-dark); font-size: 12px; font-family: var(--font-mono);">—</span></td>
-        </tr>
-        <tr>
-          <td class="date-cell">Jul 17</td>
-          <td>
-            <div class="paper-title">RL Over Performance</div>
-            <div class="paper-meta"><span class="paper-tag rl">RL</span></div>
-          </td>
-          <td class="presenter-cell">Tribhuvan &amp; Myung Sun</td>
-          <td><span style="color: var(--border-dark); font-size: 12px; font-family: var(--font-mono);">—</span></td>
-        </tr>
-        <tr>
-          <td class="date-cell">Jul 24</td>
-          <td>
-            <div class="paper-title">Evolutionary Search</div>
-            <div class="paper-meta"><span class="paper-tag theory">Search</span></div>
-          </td>
-          <td class="presenter-cell">Sungyoung</td>
-          <td><span style="color: var(--border-dark); font-size: 12px; font-family: var(--font-mono);">—</span></td>
-        </tr>
-        <tr>
-          <td class="date-cell">Jul 31</td>
-          <td>
-            <div class="paper-title">Agentic Loop</div>
-            <div class="paper-meta"><span class="paper-tag">Agents</span></div>
-          </td>
-          <td class="presenter-cell">Yingqi</td>
-          <td><span style="color: var(--border-dark); font-size: 12px; font-family: var(--font-mono);">—</span></td>
-        </tr>
+      <tbody id="home-schedule">
+        <tr><td colspan="3" style="color: var(--slate-light); font-size: 13px; padding: 1rem;">See the <a href="summer2026.html" style="color: var(--amber);">Summer 2026 page</a> for the full schedule.</td></tr>
       </tbody>
     </table>
 
@@ -640,5 +595,34 @@
   © 2026 Kernel Generation Reading Group
 </footer>
 
+<script>
+  /* Auto-sync: the home schedule mirrors the Summer 2026 page, so you only ever
+     edit the schedule in ONE place (summer2026.html) and this page follows along.
+     Note: this runs on the live (deployed) site. If you open index.html locally by
+     double-clicking the file, the browser blocks the fetch for security and you'll
+     just see the fallback link below - that's expected; it works once it's on GitHub Pages. */
+  (function(){
+    fetch('summer2026.html')
+      .then(function(r){ return r.text(); })
+      .then(function(html){
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var rows = doc.querySelectorAll('.schedule-table tbody tr');
+        var tbody = document.getElementById('home-schedule');
+        if(!rows.length || !tbody) return;
+        tbody.innerHTML = '';
+        rows.forEach(function(row){
+          var cells = row.querySelectorAll('td');
+          if(cells.length < 3) return;
+          var tr = document.createElement('tr');
+          if(row.classList.contains('today')) tr.className = 'highlight';
+          tr.appendChild(cells[0].cloneNode(true));  // Date
+          tr.appendChild(cells[1].cloneNode(true));  // Topic
+          tr.appendChild(cells[2].cloneNode(true));  // Presenter
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(function(){ /* keep the fallback link */ });
+  })();
+</script>
 </body>
 </html>
