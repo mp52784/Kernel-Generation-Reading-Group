@@ -602,6 +602,8 @@
      double-clicking the file, the browser blocks the fetch for security and you'll
      just see the fallback link below - that's expected; it works once it's on GitHub Pages. */
   (function(){
+    var YEAR = 2026;  // update if the schedule moves to another year
+    var MONTHS = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
     fetch('summer2026.html')
       .then(function(r){ return r.text(); })
       .then(function(html){
@@ -609,12 +611,20 @@
         var rows = doc.querySelectorAll('.schedule-table tbody tr');
         var tbody = document.getElementById('home-schedule');
         if(!rows.length || !tbody) return;
+        var today = new Date(); today.setHours(0,0,0,0);
+        var nextFound = false;
         tbody.innerHTML = '';
         rows.forEach(function(row){
           var cells = row.querySelectorAll('td');
           if(cells.length < 3) return;
           var tr = document.createElement('tr');
-          if(row.classList.contains('today')) tr.className = 'highlight';
+          if(!nextFound){                       // highlight first upcoming session by date
+            var m = (cells[0].textContent || '').trim().match(/^([A-Za-z]{3})\s+(\d{1,2})$/);
+            if(m && (m[1] in MONTHS)){
+              var d = new Date(YEAR, MONTHS[m[1]], parseInt(m[2], 10)); d.setHours(0,0,0,0);
+              if(d >= today){ tr.className = 'highlight'; nextFound = true; }
+            }
+          }
           tr.appendChild(cells[0].cloneNode(true));  // Date
           tr.appendChild(cells[1].cloneNode(true));  // Topic
           tr.appendChild(cells[2].cloneNode(true));  // Presenter

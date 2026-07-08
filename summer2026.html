@@ -189,7 +189,7 @@
           <a class="slides-link" href="https://utexas.zoom.us/rec/play/KdxajFgN3Kol66XXyxr-tPACeibS_2gs3G7lFbEcUa6N3rQYWlss25oYVXU5Jvlyq1J-qm9IbIIjklgP.TX3P9MxlmEmx1WOw?accessLevel=meeting&amp;canPlayFromShare=true&amp;from=share_recording_detail&amp;continueMode=true&amp;oldStyle=true&amp;componentName=rec-play&amp;originRequestUrl=https%3A%2F%2Futexas.zoom.us%2Frec%2Fshare%2FaZQBOPv07MCnPomxCSodwM9evJsKMnRGwOxPuhpdOl1WCUBgjQqOMJ1mtos3KlQZ.NKRO7O_59LhCeNEZ" target="_blank">recording</a>
         </td>
       </tr>
-      <tr class="today">
+      <tr>
         <td class="date-cell">Jul 3</td>
         <td>
           <div class="paper-title">KernelBench</div>
@@ -293,6 +293,46 @@
 <footer>
   © 2026 Kernel Generation Reading Group
 </footer>
+
+<script>
+  /* Auto-highlights the next upcoming session and rewrites the banner above,
+     based on today's date. The dates in the schedule table are the source of
+     truth - edit those and this follows along automatically. */
+  (function(){
+    var YEAR = 2026;  // update if the schedule moves to another year
+    var MONTHS = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    var today = new Date(); today.setHours(0,0,0,0);
+    var rows = document.querySelectorAll('.schedule-table tbody tr');
+    var nextRow = null, info = null;
+    rows.forEach(function(row){
+      row.classList.remove('today');
+      if(nextRow) return;
+      var cell = row.querySelector('.date-cell');
+      if(!cell) return;
+      var m = cell.textContent.trim().match(/^([A-Za-z]{3})\s+(\d{1,2})$/);
+      if(!m || !(m[1] in MONTHS)) return;   // skips "TBD" rows
+      var d = new Date(YEAR, MONTHS[m[1]], parseInt(m[2], 10)); d.setHours(0,0,0,0);
+      if(d >= today){
+        nextRow = row;
+        var t = row.querySelector('.paper-title');
+        var p = row.querySelector('.presenter-cell');
+        info = { date: cell.textContent.trim(),
+                 topic: t ? t.textContent.trim() : '',
+                 presenter: p ? p.textContent.trim() : '' };
+      }
+    });
+    var banner = document.querySelector('.today-banner');
+    if(nextRow){
+      nextRow.classList.add('today');
+      var h4 = banner && banner.querySelector('h4');
+      var pp = banner && banner.querySelector('p');
+      if(h4) h4.textContent = 'Next session \u2014 ' + info.date;
+      if(pp) pp.textContent = info.topic + '  \u00b7  Presenter: ' + info.presenter + '  \u00b7  POB 4.116 & Zoom';
+    } else if(banner){
+      banner.style.display = 'none';   // nothing upcoming with a date
+    }
+  })();
+</script>
 
 </body>
 </html>
