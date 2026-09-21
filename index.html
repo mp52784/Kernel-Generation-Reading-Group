@@ -625,7 +625,7 @@
           var cells = row.querySelectorAll('td');
           if(cells.length < 3) return;
           var tr = document.createElement('tr');
-          if(!nextFound){                       // highlight first upcoming session by date
+          if(!nextFound && !row.classList.contains('no-session')){                       // highlight first upcoming session by date
             var m = (cells[0].textContent || '').trim().match(/^([A-Za-z]{3})\s+(\d{1,2})$/);
             if(m && (m[1] in MONTHS)){
               var d = new Date(YEAR, MONTHS[m[1]], parseInt(m[2], 10)); d.setHours(0,0,0,0);
